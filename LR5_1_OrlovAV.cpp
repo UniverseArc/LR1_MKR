@@ -40,7 +40,11 @@ public:
 		*this = created;
 	}
 
-	~Array() { free(); }
+	~Array() {
+		if (m_elements) {
+			delete[] m_elements;
+		}
+	}
 
 	double& operator[](size_t index) {
 		if (0 <= index && index < size())
@@ -58,7 +62,9 @@ public:
 
 	Array& operator=(const Array& array) {
 		if (this != &array) {
-			free();
+			if (m_elements) {
+			delete[] m_elements;
+			}
 			m_allocsize = array.m_allocsize;
 			m_size = array.m_size;
 			m_elements = new double[m_allocsize];
@@ -79,8 +85,9 @@ public:
 			throw(std::invalid_argument("array too long"));
 		if (reallocsize == m_allocsize) return;
 		if (reallocsize == 0) {
-			free();
-			m_elements = 0;
+			if (m_elements) {
+			delete[] m_elements;
+			}
 		}
 		else {
 			double* new_elements = new double[reallocsize];
@@ -89,7 +96,9 @@ public:
 				m_size = reallocsize;
 			for (unsigned i = 0; i < m_size; ++i)
 				new_elements[i] = m_elements[i];
-			free();
+			if (m_elements) {
+			delete[] m_elements;
+			}
 			m_elements = new_elements;
 		}
 	}
@@ -134,13 +143,6 @@ private:
 		if (allocsize < minsize) allocsize = minsize;
 		m_allocsize = allocsize;
 		m_elements = new double[m_allocsize];
-	}
-
-	void free() {
-		if (m_elements) {
-			delete[] m_elements;
-			m_elements = 0;
-		}
 	}
 
 };
